@@ -22,7 +22,6 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        let match = {};
         let page = parseInt(req.query.page) || 1;
         let docPerPage = 5
         let skip = (page - 1) * docPerPage;
