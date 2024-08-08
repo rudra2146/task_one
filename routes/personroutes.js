@@ -1,15 +1,16 @@
+
 const express = require('express');
 const router = express.Router();
-const Person = require('../models/Person');
+const person = require('../models/person');
 
 
 router.post('/', async(req,res)=>{
     try{
-        const data = req.body;
-        const newPerson = new Person(data);
-        const response = await newPerson.save();
+        let data = req.body;
+        let newPerson = new person(data);
+        let response = await newPerson.save();
         console.log('Data saved');
-        res.status(200).json(response);
+        res.status(201).json(response);
     }
     catch(error){
         console.error('error saving data', error);
@@ -21,23 +22,23 @@ router.post('/', async(req,res)=>{
 
 router.get('/', async(req, res) => {
     try{
-        const data = await Person.find();
+        let data = await person.find().lean();
         console.log('Data fetched successfully');
         res.status(200).json(data);
     }
     catch(error){
-        console.error('Error fetching data');
+        console.error('Error fetching data',error);
         res.status(500).send('Error retrieving person');
     }
 })
 
 router.put('/:id', async (req, res) =>{
     try{
-        perosnId = req.params.id;
-        const updatedPerson = await Person.findByIdAndUpdate(perosnId, req.body, {
+        let personId = req.params.id;
+        let updatedPerson = await person.findByIdAndUpdate(personId, req.body, {
             new: true,
             runValidators: true
-        });
+        }).lean();
         if(!updatedPerson){
             return res.status(404).send('Person not found');
         }
@@ -53,8 +54,8 @@ router.put('/:id', async (req, res) =>{
 
 router.delete('/:id', async(req, res) => {
     try{
-        const personId = req.params.id;
-        const response = await Person.findOneAndDelete(personId);
+        let personId = req.params.id;
+        let response = await person.findByIdAndDelete(personId).lean();
         if(!response){
             return res.status(404).send('Person not found');
         }
@@ -68,3 +69,5 @@ router.delete('/:id', async(req, res) => {
 })
 
 module.exports = router;
+
+

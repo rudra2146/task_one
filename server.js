@@ -6,7 +6,8 @@ app.use(bodyParser.json());
 
 const personRoutes = require('./routes/personroutes');
 const db = require('./db');
-const Person = require('./models/Person');
+const person = require('./models/person');
+
 
 
 
