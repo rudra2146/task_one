@@ -28,21 +28,12 @@ router.get('/', async (req, res) => {
         let skip = (page - 1) * docPerPage;
         let limit = docPerPage;
 
-        if(req.query.keyword){
-            match.$or = [
-                { firstName: new RegExp(req.query.keyword, 'i') },
-                {author: new RegExp(req.query.keyword,"i")},
-                {title: new RegExp(req.query.keyword,"i")}
-            ];
-        }
-
         let pipeline = [
             {
                 $facet: {
                     data: [
                         { $skip: skip },
                         { $limit: limit },
-                        [{ $project: { _id: 0, firstName: 1, author: 1, title: 1 } }]
                     ],
                     totalCount: [
                         { $count: "count" }
@@ -54,7 +45,6 @@ router.get('/', async (req, res) => {
                     _id: 0,
                     docs    : "$data",
                     page : "${page}",
-                    project: "${firstName}"
                 }
             }
         ];
