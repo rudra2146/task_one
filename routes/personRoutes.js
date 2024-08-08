@@ -20,41 +20,54 @@ router.post('/', async (req, res) => {
 });
 
 
+
 router.get('/', async (req, res) => {
     try {
+        let match = {};
+
+        if (req.query.first_name) {
+            match.first_name = new RegExp(req.query.first_name, 'i'); 
+        }
+
         let page = parseInt(req.query.page) || 1;
-        let docPerPage = 5
+        let docPerPage = parseInt(req.query.limit) || 5;
         let skip = (page - 1) * docPerPage;
         let limit = docPerPage;
-
         let pipeline = [
+            { $match: match }, 
             {
                 $facet: {
-                    data: [
+                    docs: [
                         { $skip: skip },
-                        { $limit: limit },
+                        { $limit: docPerPage },
+                        { $project: { _id: 1, first_name: 1, last_name: 1, email: 1, password: 1, phone_numer: 1 ,__v:1} },
                     ],
-                    totalCount: [
-                        { $count: "count" }
-                    ]
                 }
             },
             {
                 $project: {
-                    _id: 0,
-                    docs    : "$data",
-                    page : "${page}",
+                    docs: 1,
+                    "Total Pages": { $literal: docPerPage }
                 }
             }
         ];
 
+        
         let result = await person.aggregate(pipeline).exec();
-        res.send(result);
+
+        if (!result[0].docs.length) {
+            return res.status(404).json("No documents found");
+        }
+
+        res.status(200).json(result[0]); 
     } catch (error) {
         console.error('Error fetching data', error);
         res.status(500).send('Error retrieving person');
     }
 });
+
+module.exports = router;
+
 
 
 
