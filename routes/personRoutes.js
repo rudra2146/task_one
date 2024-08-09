@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
                     docs: [
                         { $skip: skip },
                         { $limit: docPerPage },
-                        { $project: { _id: 1, first_name: 1, last_name: 1, email: 1, password: 1, phone_numer: 1 ,__v:1} },
+                        { $project: { _id: 1, first_name: 1, last_name: 1, email: 1, password: 1, phone_number: 1 ,__v:1} },
                     ],
                 }
             },
